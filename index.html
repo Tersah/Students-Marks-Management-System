@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#4338ca">
+  <meta name="description" content="A student marks management app demonstrating arrays with search, grades, class statistics, and CSV export.">
+  <title>Student Marks Manager</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">A practical data structures project</div>
+      <h1>Student Marks Manager</h1>
+      <p>Manage student scores, calculate class statistics, and explore how arrays make collections of related records easier to process.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="stats" aria-label="Class summary">
+      <article class="stat"><div class="stat-label">Students recorded</div><div class="stat-value" id="countStat">0</div></article>
+      <article class="stat"><div class="stat-label">Class average</div><div class="stat-value" id="averageStat">—</div></article>
+      <article class="stat"><div class="stat-label">Highest mark</div><div class="stat-value" id="highestStat">—</div></article>
+      <article class="stat"><div class="stat-label">Pass rate</div><div class="stat-value" id="passStat">—</div></article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>Add a student</h2><p class="sub">Enter a name and a mark between 0 and 100.</p></div>
+      </div>
+      <div class="notice" id="notice" role="status" aria-live="polite"></div>
+      <form id="addForm" class="form-grid">
+        <div><label for="nameInput">Student name</label><input id="nameInput" name="name" maxlength="70" placeholder="e.g. Ama Mensah" autocomplete="name" required></div>
+        <div><label for="markInput">Mark (0–100)</label><input id="markInput" name="mark" type="number" min="0" max="100" step="1" placeholder="e.g. 85" required></div>
+        <div><label for="classInput">Class / course</label><input id="classInput" name="className" maxlength="40" placeholder="e.g. Computer Eng."></div>
+        <button class="btn primary full-mobile" type="submit">＋ Add student</button>
+      </form>
+      <p class="sub">Records are saved in this browser on this device. This demo does not send student information to a server.</p>
+    </section>
+
+    <section class="panel">
+      <div class="toolbar">
+        <div><h2>Student records</h2><p class="sub" id="resultCount">Showing all students</p></div>
+        <div class="filters">
+          <input id="searchInput" class="search" type="search" placeholder="Search name or class…" aria-label="Search name or class">
+          <select id="sortSelect" aria-label="Sort students">
+            <option value="name">Sort: Name A–Z</option>
+            <option value="mark-desc">Mark: Highest first</option>
+            <option value="mark-asc">Mark: Lowest first</option>
+          </select>
+          <button id="exportButton" class="btn soft" type="button">Export CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Student</th><th>Class / course</th><th>Mark</th><th>Grade</th><th>Actions</th></tr></thead>
+          <tbody id="studentRows"></tbody>
+        </table>
+        <div id="emptyState" class="empty">No students found. Add a student or change your search.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><div><h2>How this project demonstrates arrays</h2><p class="sub">Each student is an object stored inside one JavaScript array.</p></div></div>
+      <div class="concepts">
+        <article class="concept"><code>push()</code><p>Adds a new student record to the end of the array.</p></article>
+        <article class="concept"><code>filter()</code><p>Finds matching students and removes a record by ID.</p></article>
+        <article class="concept"><code>reduce() / map()</code><p>Calculates the class average and derives the highest mark.</p></article>
+      </div>
+      <p class="sub grade-note">Grade scale used in this demo: A = 80–100, B = 70–79, C = 60–69, D = 50–59, F = below 50. Change the thresholds in <code>getGrade()</code> if your school uses another scale.</p>
+    </section>
+  </main>
+  <footer>Student Marks Manager · Built with HTML, CSS, and JavaScript · Static site for GitHub Pages</footer>
+
+  <div class="modal-backdrop" id="editBackdrop" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <form class="modal" id="editForm">
+      <h2 id="editTitle">Edit student</h2>
+      <input id="editId" type="hidden">
+      <div class="field"><label for="editName">Student name</label><input id="editName" maxlength="70" required></div>
+      <div class="field"><label for="editMark">Mark (0–100)</label><input id="editMark" type="number" min="0" max="100" step="1" required></div>
+      <div class="field"><label for="editClass">Class / course</label><input id="editClass" maxlength="40"></div>
+      <div class="modal-actions"><button class="btn neutral" id="cancelEdit" type="button">Cancel</button><button class="btn primary" type="submit">Save changes</button></div>
+    </form>
+  </div>
+</body>
+</html>
