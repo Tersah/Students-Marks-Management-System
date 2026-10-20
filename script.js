@@ -54,11 +54,15 @@ function showNotice(message, isError = false) {
   }, 3500);
 }
 
-function makeCell(text, className = "") {
-  const cell = document.createElement("td");
-  cell.textContent = text;
-  if (className) cell.className = className;
-  return cell;
+function iconButton(label, symbol, extra, handler) {
+  const button = document.createElement("button");
+  button.className = "icon " + extra;
+  button.type = "button";
+  button.title = label;
+  button.setAttribute("aria-label", label);
+  button.textContent = symbol;
+  button.addEventListener("click", handler);
+  return button;
 }
 
 function render() {
@@ -78,48 +82,49 @@ function render() {
     return a.name.localeCompare(b.name);
   });
 
-  const rows = document.getElementById("studentRows");
-  rows.replaceChildren();
+  const list = document.getElementById("studentRows");
+  list.replaceChildren();
 
-  visibleStudents.forEach((student, index) => {
-    const row = document.createElement("tr");
-    row.append(
-      makeCell(String(index + 1)),
-      makeCell(student.name),
-      makeCell(student.className || "—"),
-      makeCell(String(student.mark) + "%", "mark")
+  visibleStudents.forEach(student => {
+    const grade = getGrade(student.mark);
+    const item = document.createElement("li");
+    item.className = "g-" + grade;
+
+    const who = document.createElement("div");
+    who.className = "who";
+    const name = document.createElement("strong");
+    name.textContent = student.name;
+    const course = document.createElement("small");
+    course.textContent = student.className || "No class";
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    const fill = document.createElement("i");
+    fill.style.width = student.mark + "%";
+    bar.appendChild(fill);
+    who.append(name, course, bar);
+
+    const mark = document.createElement("span");
+    mark.className = "mark";
+    mark.textContent = student.mark + "%";
+
+    const end = document.createElement("div");
+    end.className = "row-end";
+    const badge = document.createElement("span");
+    badge.className = "grade";
+    badge.textContent = grade;
+    end.append(
+      badge,
+      iconButton("Edit " + student.name, "✎", "", () => openEdit(student.id)),
+      iconButton("Delete " + student.name, "✕", "del", () => deleteStudent(student.id))
     );
 
-    const gradeCell = document.createElement("td");
-    const grade = document.createElement("span");
-    grade.className = "grade";
-    grade.textContent = getGrade(student.mark);
-    gradeCell.appendChild(grade);
-    row.appendChild(gradeCell);
-
-    const actions = makeCell("");
-    actions.className = "actions";
-
-    const editButton = document.createElement("button");
-    editButton.className = "btn soft";
-    editButton.type = "button";
-    editButton.textContent = "Edit";
-    editButton.addEventListener("click", () => openEdit(student.id));
-
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "btn danger";
-    deleteButton.type = "button";
-    deleteButton.textContent = "Delete";
-    deleteButton.addEventListener("click", () => deleteStudent(student.id));
-
-    actions.append(editButton, deleteButton);
-    row.appendChild(actions);
-    rows.appendChild(row);
+    item.append(who, mark, end);
+    list.appendChild(item);
   });
 
   document.getElementById("emptyState").style.display = visibleStudents.length ? "none" : "block";
   document.getElementById("resultCount").textContent =
-    `Showing ${visibleStudents.length} of ${students.length} student${students.length === 1 ? "" : "s"}`;
+    `${visibleStudents.length} of ${students.length} shown`;
 
   const count = students.length;
   const total = students.reduce((sum, student) => sum + student.mark, 0);
@@ -182,7 +187,7 @@ function openEdit(id) {
   document.getElementById("editName").value = student.name;
   document.getElementById("editMark").value = student.mark;
   document.getElementById("editClass").value = student.className || "";
-  document.getElementById("editBackdrop").style.display = "flex";
+  document.getElementById("editBackdrop").style.display = "grid";
   document.getElementById("editName").focus();
 }
 
